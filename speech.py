@@ -2,8 +2,9 @@ from hume import HumeBatchClient
 from hume.models.config import ProsodyConfig
 from dotenv import load_dotenv
 import os
-import pprint
-from utilities import print_emotions
+#import pprint
+#from utilities import print_emotions
+from typing import Any, Dict, List
 
 #Load in API Key and use it in the client
 load_dotenv()
@@ -21,20 +22,33 @@ print("Running...")
 
 #Get job results
 job.await_complete()
-#predictions = job.get_predictions()
-#print(predictions)
+
+def print_emotions(emotions: List[Dict[str, Any]]) -> None:
+    emotion_map = {e["name"]: e["score"] for e in emotions}
+    count = 0
+    totalValence = 0
+    for emotion in ["Sadness", "Anger", "Anxiety", "Distress", "Disappointment"]:
+        totalValence = totalValence + round(emotion_map[emotion], 2)
+        count += 1
+    avg = totalValence / count  
+    return avg
 
 full_predictions = job.get_predictions()
+certainValue = 0.0
 for source in full_predictions:
     source_name = source["source"]
     predictions = source["results"]["predictions"]
     for prediction in predictions:
-        print()
-        print("Speech prosody")
         prosody_predictions = prediction["models"]["prosody"]["grouped_predictions"]
         for prosody_prediction in prosody_predictions:
             for segment in prosody_prediction["predictions"][:1]:
-                print_emotions(segment["emotions"])
+                certainValue = print_emotions(segment["emotions"])
+
+def get_certain_value():
+    return certainValue
+
+
+
 
 #Take out only data we need
 ## emotion_data = predictions[0]['results']['predictions'][0]['models']['face']['grouped_predictions'][0]['predictions'][0]['emotions']
