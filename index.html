@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Analysis</title>
+</head>
+<body>
+    <h1>Stock Analysis</h1>
+    <p id="stock-analysis"></p>
+
+    <script>
+        // Use JavaScript to fetch the value from Python
+        fetch('/get_certain_value')
+            .then(response => response.json())
+            .then(data => {
+                const certainValue = data.value;
+                const analysisText = document.getElementById('stock-analysis');
+                
+                if (certainValue > 0.3) {
+                    analysisText.textContent = "J.P. is looking sad. You should be Bearish";
+                } else {
+                    analysisText.textContent = "J.P. is looking good. You should be Bullish";
+                }
+            })
+            .catch(error => {
+                console.error("Failed to fetch data:", error);
+            });
+    </script>
+</body>
+</html>
